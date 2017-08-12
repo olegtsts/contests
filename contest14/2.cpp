@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <set>
+#include <deque>
 
 bool are_all_zeros(
         const int k,
@@ -45,13 +45,13 @@ bool is_possible_only_quarters(
     }
     // quarter_count > 0 && only 1,2 remainders, rest are zeros
 
-    std::set<int> one_remainders;
-    std::set<int> two_remainders;
+    std::deque<int> one_remainders;
+    std::deque<int> two_remainders;
     for (int i = 0; i < k; ++i) {
         if (a[i] % 4 == 1) {
-            one_remainders.insert(a[i]);
+            one_remainders.push_back(a[i]);
         } else if (a[i] % 4 == 2) {
-            two_remainders.insert(a[i]);
+            two_remainders.push_back(a[i]);
         }
     }
     while (one_remainders.size() > 0 && two_remainders.size() > 0 && quarter_count > 0) {
@@ -62,8 +62,8 @@ bool is_possible_only_quarters(
             return false;
         }
         quarter_count -= rows;
-        one_remainders.erase(one_num);
-        two_remainders.erase(second_num);
+        one_remainders.pop_front();
+        two_remainders.pop_front();
     }
     if (quarter_count == 0) {
         return are_all_zeros(k, a);
@@ -79,8 +79,8 @@ bool is_possible_only_quarters(
             return false;
         }
         quarter_count -= rows;
-        one_remainders.erase(first_num);
-        one_remainders.erase(second_num);
+        one_remainders.pop_front();
+        one_remainders.pop_front();
     }
     if (one_remainders.size() == 1) {
         int first_num = *(one_remainders.begin());
@@ -96,9 +96,9 @@ bool is_possible_only_quarters(
             return false;
         }
         quarter_count -= rows;
-        two_remainders.erase(first_num);
-        two_remainders.erase(second_num);
-        two_remainders.erase(third_num);
+        two_remainders.pop_front();
+        two_remainders.pop_front();
+        two_remainders.pop_front();
     }
     if (two_remainders.size() == 1) {
         int first_num = *(two_remainders.begin());
