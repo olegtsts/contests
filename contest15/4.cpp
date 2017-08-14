@@ -11,8 +11,8 @@ struct Multipliers {
     }
 };
 
-int pack(const int n1, const int k1, const int diff1, const int n, const int k, const int max_difference) {
-    return ((max_difference + diff1) * (n + 1) + n1) * (k + 1) + k1;
+int pack(const int n1, const int k1, const int diff1, const int n, const int k, const int min_difference) {
+    return ((diff1 - min_difference) * (n + 1) + n1) * (k + 1) + k1;
 }
 
 int main() {
@@ -31,27 +31,28 @@ int main() {
             ++a[i].five_count;
         }
     }
-    const int max_difference = 20;
-    std::vector<int> responses(max_difference * 2 * (n + 1) * (k + 1), -1);
+    const int max_difference = 60;
+    const int min_difference = -26;
+    std::vector<int> responses((max_difference - min_difference + 1) * (n + 1) * (k + 1), -1);
     Multipliers mult{0, 0};
     for (int i = 0; i < n + 1; ++i) {
         if (i < k + 1) {
-            responses[pack(i, i, mult.GetDiff(), n, k, max_difference)] = std::min(mult.two_count, mult.five_count);
+            responses[pack(i, i, mult.GetDiff(), n, k, min_difference)] = std::min(mult.two_count, mult.five_count);
 //            std::cout << " init set " << i << " " << i << " " << mult.GetDiff() << " = " << std::min(mult.two_count, mult.five_count) << std::endl;
         }
-        responses[pack(i, 0, 0, n, k, max_difference)] = 0;
+        responses[pack(i, 0, 0, n, k, min_difference)] = 0;
 //        std::cout << " init set " << i << " " << 0 << " " << 0 << " = " << 0 << std::endl;
         mult.two_count += a[i].two_count;
         mult.five_count += a[i].five_count;
     }
     for (int n1 = 0; n1 < n + 1; ++n1) {
         for (int k1 = 0; k1 < n1; ++k1) {
-            for (int diff1 = -max_difference; diff1 < max_difference; ++diff1) {
-                int max_zeros = responses[pack(n1 - 1, k1, diff1, n, k, max_difference)];
+            for (int diff1 = min_difference; diff1 < max_difference; ++diff1) {
+                int max_zeros = responses[pack(n1 - 1, k1, diff1, n, k, min_difference)];
                 if (k1 > 0) {
                     int new_diff = diff1 - a[n1 - 1].two_count + a[n1 - 1].five_count;
-                    if (new_diff >= -max_difference && new_diff < max_difference) {
-                        int old_max_zeros = responses[pack(n1 - 1, k1 - 1, new_diff, n, k, max_difference)];
+                    if (new_diff >= min_difference && new_diff < max_difference) {
+                        int old_max_zeros = responses[pack(n1 - 1, k1 - 1, new_diff, n, k, min_difference)];
                         if (old_max_zeros >= 0) {
                             int old_two_count;
                             int old_five_count;
@@ -71,7 +72,7 @@ int main() {
                         }
                     }
                 }
-                responses[pack(n1, k1, diff1, n, k, max_difference)] = max_zeros;
+                responses[pack(n1, k1, diff1, n, k, min_difference)] = max_zeros;
                 if (max_zeros > 0) {
 //                    std::cout << " set " << n1 << " " << k1 << " "  << diff1 << " = " << max_zeros << std::endl;
                 }
@@ -79,8 +80,8 @@ int main() {
         }
     }
     int final_max_zeros = 0;
-    for (int diff1 = -max_difference; diff1 < max_difference; ++diff1) {
-        int current_zeros = responses[pack(n, k, diff1, n, k, max_difference)];
+    for (int diff1 = min_difference; diff1 < max_difference; ++diff1) {
+        int current_zeros = responses[pack(n, k, diff1, n, k, min_difference)];
         if (final_max_zeros < current_zeros) {
             final_max_zeros = current_zeros;
         }
