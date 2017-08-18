@@ -3,9 +3,9 @@
 
 int main() {
     int n;
+    std::ios::sync_with_stdio(false);
     std::cin >> n;
     std::string s;
-    std::ios::sync_with_stdio(false);
     for (int i = 0; i < n; ++i) {
         long long int a;
         std::cin >> a;
