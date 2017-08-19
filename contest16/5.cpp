@@ -51,7 +51,10 @@ int main() {
         perm_counts.resize(total_numbers_count + 1, 0);
         for (int errors_count = 0; errors_count < total_numbers_count; ++errors_count) {
             for (int dropped_errors = 0; dropped_errors < same_class_sizes[i] + 1; ++dropped_errors) {
-                for (int rest_places = 0; rest_places < std::min(prev_total_numbers_count + 2, same_class_sizes[i] - dropped_errors + 1); ++rest_places) {
+                for (int rest_places = 0;
+                     rest_places < std::min(prev_total_numbers_count + 2, same_class_sizes[i] - dropped_errors + 1);
+                     ++rest_places
+                ) {
                     int new_errors = same_class_sizes[i] - dropped_errors - rest_places;
                     int old_errors_count = errors_count + dropped_errors - new_errors;
                     if (old_errors_count >= 0
