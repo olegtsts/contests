@@ -21,7 +21,7 @@ int main() {
         l = rand() % n;
         r = rand() % n;
         x = rand() % 1000000000;
-        std::cout << l << " " << r << " " << x << std::endl;
+        std::cout << l + 1 << " " << r + 1 << " " << x << std::endl;
     }
     return 0;
 }
