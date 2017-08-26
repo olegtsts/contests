@@ -282,6 +282,7 @@ TSquareNode* BuildTree(std::vector<TSquareNode>& pool, int& pool_index, std::vec
 }
 
 int main() {
+    std::ios::sync_with_stdio(false);
     int n;
     std::cin >> n;
     std::vector<TPoint> points(2 * n);

@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
-#include <chrono>
 
 struct Linear {
     long long int a = 0;
@@ -384,11 +383,12 @@ Linear FastGetPrefixSquareSum(
     return result;
 }
 int main() {
+    std::ios::sync_with_stdio(false);
     int n;
     std::cin >> n;
     std::vector<TPoint> sorted_x_points(2 * n);
     std::vector<TPoint> sorted_y_points(2 * n);
-    auto start_time = std::chrono::system_clock::now();
+//    auto start_time = std::chrono::system_clock::now();
     std::vector<long long int> constant_prefix_sums(n + 1, 0);
     for (int i = 0; i < n; ++i) {
         long long int x1, x2, y1, y2, a, b;
@@ -406,15 +406,15 @@ int main() {
     std::sort(sorted_y_points.begin(), sorted_y_points.end(), [] (const TPoint& first, const TPoint& second) -> bool {
         return first.y < second.y;
     });
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
-    start_time = std::chrono::system_clock::now();
+//    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
+//    start_time = std::chrono::system_clock::now();
     std::vector<TSquareNode> pool(2000000);
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
-    start_time = std::chrono::system_clock::now();
+//    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
+//    start_time = std::chrono::system_clock::now();
     int pool_index = 0;
     TSquareNode& root = *BuildTree(false, false, pool, pool_index, sorted_x_points, sorted_y_points);
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
-    start_time = std::chrono::system_clock::now();
+//    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
+//    start_time = std::chrono::system_clock::now();
     int m;
     std::cin >> m;
     long long int last = 0;
@@ -436,8 +436,8 @@ int main() {
         last = linear.a * x + linear.b;
         std::cout << last << std::endl;
     }
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
-    start_time = std::chrono::system_clock::now();
+//    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() << '\n';
+//    start_time = std::chrono::system_clock::now();
 
     return 0;
 }

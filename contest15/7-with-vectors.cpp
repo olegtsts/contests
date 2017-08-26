@@ -272,6 +272,7 @@ TSquareNode* BuildTree(const bool is_rows_index, const bool is_cols_index, std::
 }
 
 int main() {
+    std::ios::sync_with_stdio(false);
     int n;
     std::cin >> n;
     std::vector<TPoint> points(2 * n);

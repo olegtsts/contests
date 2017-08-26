@@ -125,6 +125,7 @@ private:
 };
 
 int main() {
+    std::ios::sync_with_stdio(false);
     int n;
     std::cin >> n;
     PersistentSegmentTree<long long int, Linear> tree(0, 200001, 2 * n + 1);
