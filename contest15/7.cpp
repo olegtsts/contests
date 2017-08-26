@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 struct Linear {
     long long int a = 0;
@@ -41,22 +42,33 @@ private:
         Node* right_node = nullptr;
     };
 public:
+    Node* GetNewNode(const TCoord& left, const TCoord& right, const TValue& value) {
+        assert(node_pool_index < node_pool.size());
+        Node* node = &node_pool[node_pool_index++];
+        node->left = left;
+        node->right = right;
+        node->value = value;
+        return node;
+    }
+
     PersistentSegmentTree& InitalizeTreeRecursive(Node* parent, const TCoord& left, const TCoord& right) {
         if (right > left + 1) {
             TCoord middle = (left + right) / 2;
-            parent->left_node = new Node{left, middle};
-            parent->right_node = new Node{middle, right};
+            parent->left_node = GetNewNode(left, middle, {});
+            parent->right_node = GetNewNode(middle, right, {});
             InitalizeTreeRecursive(parent->left_node, left, middle);
             InitalizeTreeRecursive(parent->right_node, middle, right);
         }
         return *this;
     }
-    PersistentSegmentTree(const TCoord& left, const TCoord& right) {
-        versioned_roots.push_back(new Node{left, right});
+    PersistentSegmentTree(const TCoord& left, const TCoord& right, const size_t versions_count)
+    : node_pool(4000000), node_pool_index(0) {
+        versioned_roots.reserve(versions_count);
+        versioned_roots.push_back(GetNewNode(left, right, {}));
         InitalizeTreeRecursive(versioned_roots[0], left, right);
     }
     Node* CloneNodeAddingValue(Node* node, const TValue& value) {
-        return new Node{node->left, node->right, node->value + value};
+        return GetNewNode(node->left, node->right, node->value + value);
     }
     PersistentSegmentTree& UpdateRecursive(Node* new_parent, Node* parent, const TCoord& coord, const TValue& value) {
         if (parent->right > parent->left + 1) {
@@ -86,6 +98,9 @@ public:
     }
     TValue GetPrefixSumRecursive(Node* parent, const TCoord& coord) {
         if (parent->right > parent->left + 1) {
+            if (coord >= parent->right) {
+                return parent->value;
+            }
             TCoord middle = (parent->left + parent->right) / 2;
             if (coord >= middle) {
 //                std::cout << "Summing from segment" << *parent->left_node << std::endl;
@@ -93,7 +108,7 @@ public:
             } else {
                 return GetPrefixSumRecursive(parent->left_node, coord);
             }
-        } else if (coord == parent->right && parent->right == parent->left + 1) {
+        } else if (coord >= parent->right && parent->right == parent->left + 1) {
 //            std::cout << "Summing from segment" << *parent << std::endl;
             return parent->value;
         } else {
@@ -105,12 +120,14 @@ public:
     }
 private:
     std::vector<Node*> versioned_roots;
+    std::vector<Node> node_pool;
+    size_t node_pool_index;
 };
 
 int main() {
-    PersistentSegmentTree<long long int, Linear> tree(0, 200001);
     int n;
     std::cin >> n;
+    PersistentSegmentTree<long long int, Linear> tree(0, 200001, 2 * n + 1);
     std::vector<long long int> constant_prefix_sums(n + 1, 0);
     for (int i = 0; i < n; ++i) {
         long long int x1, x2, y1, y2, a, b;
@@ -140,5 +157,6 @@ int main() {
         last = linear.a * x + linear.b;
         std::cout << last << std::endl;
     }
+    //123
     return 0;
 }
