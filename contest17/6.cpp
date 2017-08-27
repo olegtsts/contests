@@ -53,8 +53,6 @@ void TransferState(
         bool is_missed;
         bool is_prev;
         std::tie(mask, is_missed, is_prev) = Unpack(index);
-//        std::cout << "(" << std::boolalpha << mask << ", " << is_missed << ", " << is_prev
-//            << ") -> (" << new_mask << ", " << new_is_missed << ", " << new_is_prev << ") " << dp[index] << "\n";
     }
 }
 
@@ -66,7 +64,6 @@ void MoveState(
     for (int i = 0; i < 262144; ++i) {
         new_dp[i] = 0;
     }
-//    std::cout << "Moving state\n";
 }
 
 int main() {
@@ -91,7 +88,6 @@ int main() {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
             uint16_t current_bit = (uint16_t(1) << j);
-//            std::cout << "i = " << i << ", j = " << j << std::endl;
             for (size_t index = 0; index < 262144; ++index) {
                 if (dp[index] > 0) {
                     uint16_t mask;
@@ -114,7 +110,6 @@ int main() {
             }
             MoveState(dp, new_dp);
         }
-//        std::cout << "Final move is_prev\n";
         for (size_t index = 0; index < 262144; ++index) {
             if (dp[index] > 0) {
                 uint16_t mask;
