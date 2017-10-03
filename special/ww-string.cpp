@@ -1,5 +1,9 @@
 #include <vector>
 #include <iostream>
+#include <memory>
+#include <algorithm>
+
+const long long int MODULO = 1000000007;
 
 class IncreasingNumbersState {
 public:
@@ -204,21 +208,93 @@ public:
     EquivalentClassesState last_symbols_classes;
 };
 
-int main() {
-//    EquivalentClassesState::Indexer indexer(9);
-//    std::cout << indexer.GetMaxIndex() << std::endl;
-//    EquivalentClassesState state = indexer.GetState(21145);
-//    for (auto& el: state.GetClasses()) {
-//        std::cout << " " << el;
-//    }
-//    std::cout << std::endl;
-    WWState::Indexer ww_indexer(3);
-    std::cout << ww_indexer.GetMaxIndex() << std::endl;
-    WWState ww_state = ww_indexer.GetState(29);
-    for (auto& el: ww_state.last_symbols_classes.GetClasses()) {
-        std::cout << " " << el;
+class BaseResultsVisitor {
+public:
+    struct Result {
+        int k;
+        int n;
+        int a;
+        long long int word_count;
+    };
+
+    virtual void AddResult(const Result& result) = 0;
+
+    virtual ~BaseResultsVisitor() {
     }
-    std::cout << std::endl;
-    std::cout << ww_state.shift_max_prefix.GetNumber(2) << std::endl;
+};
+
+class OutputResultsVisitor : public BaseResultsVisitor {
+public:
+    void AddResult(const BaseResultsVisitor::Result& result) {
+        std::cout << result.k << " " << result.n << " " << result.a << " " << result.word_count << std::endl;
+    }
+};
+
+void AddMod(long long int& var, const long long int value) {
+    var += value;
+    var %= MODULO;
+}
+
+void GenerateResults(const int k, const int n, const int a, std::unique_ptr<BaseResultsVisitor>&& results_visitor) {
+    WWState::Indexer ww_indexer(k);
+    std::vector<long long int> strings_count(ww_indexer.GetMaxIndex(), 0);
+    strings_count[0] = 1;
+    for (int string_length = 1; string_length <= n; ++string_length) {
+        std::vector<long long int> new_strings_count(ww_indexer.GetMaxIndex(), 0);
+        long long int total_strings_count = 0;
+        for (size_t index = 0; index < ww_indexer.GetMaxIndex(); ++index) {
+            if (strings_count[index] > 0) {
+                WWState ww_state = ww_indexer.GetState(index);
+                auto& classes = ww_state.last_symbols_classes.GetClasses();
+                auto max_class_identificator = *std::max_element(classes.begin(), classes.end());
+                for (size_t new_class = 0; new_class <= max_class_identificator + 1; ++new_class) {
+                    std::vector<size_t> new_classes(classes.size());
+                    for (size_t i = 0; i + 1 < new_classes.size(); ++i) {
+                        new_classes[i] = classes[i + 1];
+                    }
+                    new_classes.back() = new_class;
+
+                    if (new_classes[0] > 0) {
+                        for (size_t i = 0; i < new_classes.size(); ++i) {
+                            --new_classes[i];
+                        }
+                    }
+
+                    bool is_string_ok = true;
+                    IncreasingNumbersState new_shift_max_prefix;
+                    for (int i = 0; i < k; ++i) {
+                        // (i + 1) move last prefix size
+                        size_t same_prefix_length = ww_state.shift_max_prefix.GetNumber(i);
+                        if (new_class == classes[k - (i + 1)]) {
+                            ++same_prefix_length;
+                        }
+                        if (same_prefix_length < static_cast<size_t>(i) + 1) {
+                            new_shift_max_prefix.AddNumber(same_prefix_length);
+                        } else {
+                            is_string_ok = false;
+                            break;
+                        }
+                    }
+                    long long int coef = 1;
+                    if (new_class == max_class_identificator + 1) {
+                        coef = std::max(0, a - static_cast<int>(max_class_identificator) - 1);
+                    }
+                    if (is_string_ok && coef != 0) {
+                        WWState new_ww_state(std::move(new_shift_max_prefix), EquivalentClassesState(std::move(new_classes)));
+                        size_t new_index = ww_indexer.GetIndex(new_ww_state);
+                        AddMod(new_strings_count[new_index], strings_count[index] * coef);
+                        AddMod(total_strings_count, strings_count[index] * coef);
+                    }
+                }
+            }
+        }
+        results_visitor->AddResult({k, string_length, a, total_strings_count});
+        strings_count = std::move(new_strings_count);
+    }
+}
+
+int main() {
+    std::unique_ptr<BaseResultsVisitor> results_visitor = std::make_unique<OutputResultsVisitor>();
+    GenerateResults(3, 7, 3, std::move(results_visitor));
     return 0;
 }
