@@ -34,18 +34,18 @@ long long int GetDistinguableCountsTest(const int k, const int a, const int n) {
     do {
         if (IsStringDistinguable(input_string, k)) {
             ++distinguable_strings_count;
-            std::cout << input_string << " " << true << std::endl;
+//            std::cout << input_string << " " << true << std::endl;
         } else {
-            std::cout << input_string << " " << false << std::endl;
+//            std::cout << input_string << " " << false << std::endl;
         }
     } while (IterateString(input_string, n, a));
     return distinguable_strings_count;
 }
 
 int main() {
-    int n = 4;
-    int k = 2;
-    int a = 10;
+    int k = 3;
+    int n = 5;
+    int a = 3;
     std::cin >> k >> n >> a;
     std::cout << GetDistinguableCountsTest(k, a, n) << std::endl;
     return 0;
