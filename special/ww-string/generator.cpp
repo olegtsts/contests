@@ -449,7 +449,7 @@ void GenerateResults(WWState::Indexer& ww_indexer, const int k, const int n, con
 
 int main() {
     std::unique_ptr<BaseResultsVisitor> results_visitor = std::make_unique<CodeGenerationVisitor>();
-    for (int k = 3; k <= 3; ++k) {
+    for (int k = 1; k <= 9; ++k) {
         WWState::Indexer ww_indexer(k);
         std::cout << "Done building indexer\n";
         for (int a = 1; a <= 26; ++a) {
