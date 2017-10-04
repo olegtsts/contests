@@ -7,6 +7,7 @@
 #include <fstream>
 #include <cassert>
 #include <ctime>
+#include <unordered_set>
 
 const long long int MODULO = 1000000007;
 
@@ -371,11 +372,14 @@ void AddMod(long long int& var, const long long int value) {
 void GenerateResults(WWState::Indexer& ww_indexer, const int k, const int n, const int a, std::unique_ptr<BaseResultsVisitor>&& results_visitor) {
     std::vector<long long int> strings_count(ww_indexer.GetMaxIndex(), 0);
     strings_count[0] = 1;
+    std::unordered_set<size_t> non_zero_indices;
+    non_zero_indices.insert(0);
     for (int string_length = 1; string_length <= n; ++string_length) {
         std::vector<long long int> new_strings_count(ww_indexer.GetMaxIndex(), 0);
         long long int total_strings_count = 0;
         std::cout << std::time(0) << " :: length = " << string_length << std::endl;
-        for (size_t index = 0; index < ww_indexer.GetMaxIndex(); ++index) {
+        std::unordered_set<size_t> new_non_zero_indices;
+        for (size_t index: non_zero_indices) {
             assert(index < strings_count.size());
             if (strings_count[index] > 0) {
                 WWState ww_state = ww_indexer.GetState(index);
@@ -438,12 +442,14 @@ void GenerateResults(WWState::Indexer& ww_indexer, const int k, const int n, con
                         assert(index < strings_count.size());
                         AddMod(new_strings_count[new_index], strings_count[index] * coef);
                         AddMod(total_strings_count, strings_count[index] * coef);
+                        new_non_zero_indices.insert(new_index);
                     }
                 }
             }
         }
         results_visitor->AddResult({k, string_length, a, total_strings_count});
         strings_count = std::move(new_strings_count);
+        non_zero_indices = std::move(new_non_zero_indices);
     }
 }
 
