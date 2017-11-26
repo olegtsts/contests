@@ -1,3 +1,5 @@
+#pragma GCC target ("avx,tune=native")
+#pragma GCC optimize ("O3")
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -31,10 +33,13 @@ int main() {
         }
     }
 
+    std::vector<long long int> numbers(n, 0);
     for (int i = 0; i < n; ++i) {
-        int a = 0;
-        std::cin >> a;
-        long long int total_xor = masks[a];
+        std::cin >> numbers[i];
+    }
+
+    for (int i = 0; i < n; ++i) {
+        long long int total_xor = masks[numbers[i]];
         for (size_t i = 0; i < 524288; ++i) {
             new_counts[i] = counts[i] + counts[i ^ total_xor];
             new_counts[i] %= MODULO;
