@@ -33,18 +33,30 @@ int main() {
         }
     }
 
-    std::vector<long long int> numbers(n, 0);
+
+    int number;
+    std::vector<long long int> frequences(71, 0);
+    std::vector<long long int> powers_of_two(n, 1);
     for (int i = 0; i < n; ++i) {
-        std::cin >> numbers[i];
+        std::cin >> number;
+        ++frequences[number];
+        if (i > 0) {
+            powers_of_two[i] = powers_of_two[i - 1] * 2 % MODULO;
+        }
     }
 
-    for (int i = 0; i < n; ++i) {
-        long long int total_xor = masks[numbers[i]];
-        for (size_t i = 0; i < 524288; ++i) {
-            new_counts[i] = counts[i] + counts[i ^ total_xor];
-            new_counts[i] %= MODULO;
+    for (int a = 0; a < 71; ++a) {
+        long long int freq = frequences[a];
+        if (freq > 0) {
+            long long int total_xor = masks[a];
+            for (size_t i = 0; i < 524288; ++i) {
+                new_counts[i] = (counts[i] + counts[i ^ total_xor]);
+                new_counts[i] %= MODULO;
+                new_counts[i] *= powers_of_two[freq - 1];
+                new_counts[i] %= MODULO;
+            }
+            std::swap(counts, new_counts);
         }
-        std::swap(counts, new_counts);
     }
     std::cout << (counts[0] + MODULO - 1) % MODULO << std::endl;
     return 0;
