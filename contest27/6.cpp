@@ -2,7 +2,6 @@
 #include <vector>
 
 int main() {
-//    std::ios::sync_with_stdio(false);
     int n,k;
     std::cin >> n >> k;
 
