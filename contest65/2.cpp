@@ -3,18 +3,11 @@
 #include <algorithm>
 #include <limits>
 
-long long int getSmallestProduct(const std::vector<long long int>& numbers, int k) {
+template <typename Iterator>
+long long int getProduct(Iterator it, int k) {
     long long int product = 1;
     for (int i = 0; i < k; ++i) {
-        product *= numbers[i];
-    }
-    return product;
-}
-
-long long int getBiggestProduct(const std::vector<long long int>& numbers, int k) {
-    long long int product = 1;
-    for (int i = static_cast<int>(numbers.size() - k); i < static_cast<int>(numbers.size()); ++i) {
-        product *= numbers[i];
+        product *= *it++;
     }
     return product;
 }
@@ -39,9 +32,9 @@ long long int SolveTest() {
     for (int positives_count = 0; positives_count <= 5; ++positives_count) {
         if (positives_count <= static_cast<int>(positives.size()) && 5 - positives_count <= static_cast<int>(negatives.size())) {
             if (positives_count % 2 == 0) {
-                max_product = std::max(max_product, getBiggestProduct(positives, positives_count) * getSmallestProduct(negatives, 5 - positives_count));
+                max_product = std::max(max_product, getProduct(positives.rbegin(), positives_count) * getProduct(negatives.begin(), 5 - positives_count));
             } else {
-                max_product = std::max(max_product, getBiggestProduct(positives, positives_count) * getBiggestProduct(negatives, 5 - positives_count));
+                max_product = std::max(max_product, getProduct(positives.rbegin(), positives_count) * getProduct(negatives.rbegin(), 5 - positives_count));
             }
         }
     }
